@@ -1,17 +1,20 @@
-import 'package:assignment_mapsense/views/history_view/bloc/history_bloc.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import 'package:assignment_mapsense/views/history_view/bloc/history_bloc.dart';
+import 'package:assignment_mapsense/views/map_view/bloc/map_bloc.dart';
 
 class HistoryView extends StatefulWidget {
   final GoogleMapController controller;
-  final Set<Marker> markers;
+  final MapBloc mapBloc;
   const HistoryView({
-    super.key,
+    Key? key,
     required this.controller,
-    required this.markers,
-  });
+    required this.mapBloc,
+  }) : super(key: key);
 
   @override
   State<HistoryView> createState() => _HistoryViewState();
@@ -30,7 +33,7 @@ class _HistoryViewState extends State<HistoryView> {
     double initialChildSize = 0.35;
     return DraggableScrollableSheet(
         initialChildSize: initialChildSize,
-        minChildSize: 0.08,
+        minChildSize: 0.15,
         maxChildSize: 0.65,
         builder: (context, scrollController) => Container(
               decoration: const BoxDecoration(
@@ -76,9 +79,18 @@ class _HistoryViewState extends State<HistoryView> {
                     ),
                     BlocConsumer<HistoryBloc, HistoryState>(
                       bloc: historyBloc,
+                      listenWhen: (previous, current) =>
+                          current is HistoryActionState,
                       listener: (context, state) {
-                        // TODO: implement listener
+                        if (state is HistoryNavigateToPinActionState) {
+                          Navigator.pop(context);
+                          widget.mapBloc.add(MapIthLocationPressedEvent(
+                              coordsModel: state.coords,
+                              controller: state.controller));
+                        }
                       },
+                      buildWhen: (previous, current) =>
+                          current is! HistoryActionState,
                       builder: (context, state) {
                         switch (state.runtimeType) {
                           case HistoryListEmptyState:
@@ -128,32 +140,15 @@ class _HistoryViewState extends State<HistoryView> {
                                                         horizontal: 5.0),
                                                 child: IconButton(
                                                     onPressed: () {
-                                                      widget.controller.animateCamera(
-                                                          CameraUpdate.newCameraPosition(CameraPosition(
-                                                              zoom: 12,
-                                                              target: LatLng(
-                                                                  successState
+                                                      historyBloc.add(
+                                                          HistoryIthCoordPinPressedEvent(
+                                                              mapBloc: widget
+                                                                  .mapBloc,
+                                                              controller: widget
+                                                                  .controller,
+                                                              coords: successState
                                                                       .coordsList[
-                                                                          index]
-                                                                      .lat!,
-                                                                  successState
-                                                                      .coordsList[
-                                                                          index]
-                                                                      .long!))));
-                                                      Navigator.pop(context);
-                                                      widget.markers.clear();
-                                                      widget.markers.add(Marker(
-                                                          markerId: const MarkerId(
-                                                              'currentLocation'),
-                                                          position: LatLng(
-                                                              successState
-                                                                  .coordsList[
-                                                                      index]
-                                                                  .lat!,
-                                                              successState
-                                                                  .coordsList[
-                                                                      index]
-                                                                  .long!)));
+                                                                  index]));
                                                     },
                                                     icon: const Icon(Icons
                                                         .pin_drop_outlined))),

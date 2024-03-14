@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
               foregroundColor: Colors.white),
           appBarTheme: AppBarTheme(
               centerTitle: false,
-              backgroundColor: Colors.transparent.withAlpha(15),
+              backgroundColor: Colors.teal.shade900,
               titleTextStyle: TextStyle(
                   fontSize: 24,
                   letterSpacing: 1.3,
