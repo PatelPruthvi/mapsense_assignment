@@ -1,13 +1,18 @@
+import 'package:assignment_mapsense/database/sql_helper.dart';
+import 'package:assignment_mapsense/models/coords_model.dart';
+import 'package:assignment_mapsense/views/history_view/ui/history_view.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+
+Set<Marker> markers = {};
 
 class MapView extends StatefulWidget {
   const MapView({super.key});
 
   @override
   State<MapView> createState() => _MapViewState();
+  getMarker() => markers;
 }
 
 class _MapViewState extends State<MapView> {
@@ -15,28 +20,28 @@ class _MapViewState extends State<MapView> {
   // co-ords of gurgaon
   static const CameraPosition initialCameraPosition =
       CameraPosition(zoom: 12, target: LatLng(28.4595, 77.0266));
-  Set<Marker> markers = {};
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          title: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.teal.shade900),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(Icons.map_outlined, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text('MapSense'),
-                ],
-              )),
-        ),
+        // appBar: AppBar(
+        //   title: Container(
+        //       padding: const EdgeInsets.all(10),
+        //       decoration: BoxDecoration(
+        //           borderRadius: BorderRadius.circular(10),
+        //           color: Colors.teal.shade900),
+        //       child: const Row(
+        //         mainAxisSize: MainAxisSize.min,
+        //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //         children: [
+        //           Icon(Icons.map_outlined, color: Colors.white),
+        //           SizedBox(width: 10),
+        //           Text('MapSense'),
+        //         ],
+        //       )),
+        // ),
         body: GoogleMap(
+          myLocationButtonEnabled: false,
           zoomControlsEnabled: false,
           initialCameraPosition: initialCameraPosition,
           onMapCreated: (controller) {
@@ -57,142 +62,17 @@ class _MapViewState extends State<MapView> {
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
                         context: context,
-                        builder: (context) => DraggableScrollableSheet(
-                            initialChildSize: 0.35,
-                            minChildSize: 0.15,
-                            maxChildSize: 0.62,
-                            builder: (_, scrollController) => Container(
-                                  decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(20),
-                                          topRight: Radius.circular(20))),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 20.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          "Saved Co-ordinates",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontFamily:
-                                                  GoogleFonts.varelaRound()
-                                                      .fontFamily,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 24),
-                                        ),
-                                        Expanded(
-                                          child: ListView.builder(
-                                            shrinkWrap: true,
-                                            controller: scrollController,
-                                            physics:
-                                                const BouncingScrollPhysics(),
-                                            itemCount: 10,
-                                            itemBuilder: (context, index) {
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 10.0,
-                                                        vertical: 15),
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: Container(
-                                                    padding:
-                                                        const EdgeInsets.all(6),
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
-                                                        border: Border.all(
-                                                            color: Colors
-                                                                .teal.shade900),
-                                                        boxShadow: List.filled(
-                                                            1,
-                                                            const BoxShadow(
-                                                                blurRadius: 2,
-                                                                offset: Offset(
-                                                                    .5, 2))),
-                                                        color: Colors
-                                                            .grey.shade200),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  horizontal:
-                                                                      15.0),
-                                                          child: Text(
-                                                            "${index + 1}",
-                                                            style: TextStyle(
-                                                                fontSize: 22,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontFamily: GoogleFonts
-                                                                        .varelaRound()
-                                                                    .fontFamily),
-                                                          ),
-                                                        ),
-                                                        Expanded(
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Text(
-                                                                  "Manjalpur, Vadodara",
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          18,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      fontFamily:
-                                                                          GoogleFonts.varelaRound()
-                                                                              .fontFamily)),
-                                                              const Text(
-                                                                  "Lat: 34.32424"),
-                                                              const Text(
-                                                                  "Long: 77.874532"),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        IconButton(
-                                                            onPressed: () {},
-                                                            icon: const Icon(
-                                                                Icons
-                                                                    .delete_outline_outlined,
-                                                                color:
-                                                                    Colors.red))
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )));
+                        builder: (context) => HistoryView(
+                            controller: googleMapController,
+                            markers: markers)).then((value) {
+                      setState(() {});
+                    });
                   },
                   label: const Text("Location History"),
                   icon: const Icon(Icons.history_outlined)),
               FloatingActionButton.extended(
                   onPressed: () {
-                    _determinePosition().then((value) {
+                    _determinePosition().then((value) async {
                       googleMapController.animateCamera(
                           CameraUpdate.newCameraPosition(CameraPosition(
                               zoom: 12,
@@ -203,6 +83,9 @@ class _MapViewState extends State<MapView> {
                           markerId: const MarkerId('currentLocation'),
                           position: LatLng(value.latitude, value.longitude)));
                       setState(() {});
+                      final coords = CoordsModel(
+                          lat: value.latitude, long: value.longitude);
+                      await TableHelper.createItem(coords);
                     }).onError((error, stackTrace) => null);
                   },
                   label: const Text("Current location"),

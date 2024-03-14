@@ -1,0 +1,215 @@
+import 'package:assignment_mapsense/views/history_view/bloc/history_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+class HistoryView extends StatefulWidget {
+  final GoogleMapController controller;
+  final Set<Marker> markers;
+  const HistoryView({
+    super.key,
+    required this.controller,
+    required this.markers,
+  });
+
+  @override
+  State<HistoryView> createState() => _HistoryViewState();
+}
+
+class _HistoryViewState extends State<HistoryView> {
+  final HistoryBloc historyBloc = HistoryBloc();
+  @override
+  void initState() {
+    historyBloc.add(HistoryInitialEvent());
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double initialChildSize = 0.35;
+    return DraggableScrollableSheet(
+        initialChildSize: initialChildSize,
+        minChildSize: 0.08,
+        maxChildSize: 0.65,
+        builder: (context, scrollController) => Container(
+              decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20))),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 20.0, 0, 0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    MediaQuery.removePadding(
+                      context: context,
+                      removeTop: true,
+                      child: ListView(
+                        shrinkWrap: true,
+                        controller: scrollController,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 5.0),
+                            child: Center(
+                              child: Container(
+                                height: 5,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: Colors.grey.shade400),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            "Saved Co-ordinates",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontFamily:
+                                    GoogleFonts.varelaRound().fontFamily,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24),
+                          ),
+                        ],
+                      ),
+                    ),
+                    BlocConsumer<HistoryBloc, HistoryState>(
+                      bloc: historyBloc,
+                      listener: (context, state) {
+                        // TODO: implement listener
+                      },
+                      builder: (context, state) {
+                        switch (state.runtimeType) {
+                          case HistoryListEmptyState:
+                            return const Expanded(
+                              child: Center(
+                                  child: Text(
+                                      "No Co-ordinates Stored Previously...")),
+                            );
+                          case HistoryListLoadedSuccessState:
+                            final successState =
+                                state as HistoryListLoadedSuccessState;
+                            return Expanded(
+                              child: MediaQuery.removePadding(
+                                context: context,
+                                removeTop: true,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  controller: scrollController,
+                                  physics: const ClampingScrollPhysics(),
+                                  itemCount: successState.coordsList.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0, vertical: 15),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(6),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            border: Border.all(
+                                                color: Colors.teal.shade900),
+                                            boxShadow: List.filled(
+                                                1,
+                                                const BoxShadow(
+                                                    blurRadius: 2,
+                                                    offset: Offset(.5, 2))),
+                                            color: Colors.grey.shade200),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 5.0),
+                                                child: IconButton(
+                                                    onPressed: () {
+                                                      widget.controller.animateCamera(
+                                                          CameraUpdate.newCameraPosition(CameraPosition(
+                                                              zoom: 12,
+                                                              target: LatLng(
+                                                                  successState
+                                                                      .coordsList[
+                                                                          index]
+                                                                      .lat!,
+                                                                  successState
+                                                                      .coordsList[
+                                                                          index]
+                                                                      .long!))));
+                                                      Navigator.pop(context);
+                                                      widget.markers.clear();
+                                                      widget.markers.add(Marker(
+                                                          markerId: const MarkerId(
+                                                              'currentLocation'),
+                                                          position: LatLng(
+                                                              successState
+                                                                  .coordsList[
+                                                                      index]
+                                                                  .lat!,
+                                                              successState
+                                                                  .coordsList[
+                                                                      index]
+                                                                  .long!)));
+                                                    },
+                                                    icon: const Icon(Icons
+                                                        .pin_drop_outlined))),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                      successState
+                                                          .locations[index],
+                                                      maxLines: 2,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontFamily: GoogleFonts
+                                                                  .varelaRound()
+                                                              .fontFamily)),
+                                                  Text(
+                                                      "Lat: ${successState.coordsList[index].lat}"),
+                                                  Text(
+                                                      "Long: ${successState.coordsList[index].long}"),
+                                                ],
+                                              ),
+                                            ),
+                                            IconButton(
+                                                onPressed: () {
+                                                  historyBloc.add(
+                                                      HistoryIthItemDeletedPressedEvent(
+                                                          id: successState
+                                                              .coordsList[index]
+                                                              .id!));
+                                                },
+                                                icon: const Icon(
+                                                    Icons
+                                                        .delete_outline_outlined,
+                                                    color: Colors.red))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          default:
+                            return Container();
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ));
+  }
+}

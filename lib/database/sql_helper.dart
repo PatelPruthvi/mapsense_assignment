@@ -34,8 +34,8 @@ class TableHelper {
     return await db.query(coordsTableName);
   }
 
-  static Future deleteCoord(CoordsModel coords) async {
+  static Future deleteCoord(int id) async {
     final db = await SQLHelper.db();
-    await db.delete(coordsTableName, where: "id=?", whereArgs: [coords.id]);
+    await db.delete(coordsTableName, where: "id=?", whereArgs: [id]);
   }
 }
