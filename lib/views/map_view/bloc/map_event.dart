@@ -20,4 +20,8 @@ class MapIthLocationPressedEvent extends MapEvent {
       {required this.coordsModel, required this.controller});
 }
 
-class MapShowLinesClickedEvent extends MapEvent {}
+class MapShowLinesClickedEvent extends MapEvent {
+  final GoogleMapController controller;
+
+  MapShowLinesClickedEvent({required this.controller});
+}

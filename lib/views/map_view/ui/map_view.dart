@@ -31,17 +31,16 @@ class _MapViewState extends State<MapView> {
   final MapBloc mapBloc = MapBloc();
   //cor-ords of gurugram
   static const CameraPosition initialCameraPosition =
-      CameraPosition(zoom: 8, target: LatLng(28.4595, 77.0266));
+      CameraPosition(zoom: 12.5, target: LatLng(28.4595, 77.0266));
   @override
   void initState() {
-    mapBloc.add(MapShowLinesClickedEvent());
+    mapBloc.add(MapInitialEvent());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        extendBodyBehindAppBar: true,
         appBar: AppBar(
           title: Container(
               padding: const EdgeInsets.all(10),
@@ -50,9 +49,21 @@ class _MapViewState extends State<MapView> {
                   color: Colors.teal.shade900),
               child: const Text('MapSense')),
           actions: [
-            IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.more_vert_outlined, color: Colors.white))
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert_outlined, color: Colors.white),
+              onSelected: (String val) {
+                mapBloc.add(
+                    MapShowLinesClickedEvent(controller: googleMapController));
+              },
+              itemBuilder: (BuildContext context) {
+                return {'Show Lines'}.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            ),
           ],
         ),
         body: BlocConsumer<MapBloc, MapState>(
@@ -74,9 +85,14 @@ class _MapViewState extends State<MapView> {
               case MapLoadedSuccessState:
                 final successState = state as MapLoadedSuccessState;
                 return GoogleMap(
+                  mapType: successState.mapType,
                   myLocationButtonEnabled: false,
                   zoomControlsEnabled: false,
-                  initialCameraPosition: initialCameraPosition,
+                  initialCameraPosition: successState.markers.isNotEmpty
+                      ? CameraPosition(
+                          zoom: 12.5,
+                          target: successState.markers.first.position)
+                      : initialCameraPosition,
                   onMapCreated: (controller) {
                     googleMapController = controller;
                   },

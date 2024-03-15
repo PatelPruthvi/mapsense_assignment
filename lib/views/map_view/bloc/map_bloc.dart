@@ -69,13 +69,13 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     for (var element in coordsMap) {
       coordsList.add(CoordsModel.fromJson(element));
     }
-    print(coordsList.length);
     for (int i = 0; i < coordsList.length; i++) {
       final coordItem = coordsList[i];
       markers.add(Marker(
           markerId: MarkerId('$i'),
           infoWindow: InfoWindow(
-              snippet: i.toString(),
+              snippet:
+                  '${await getCityName(coordItem.lat!, coordItem.long!)} \n $i',
               title: await getRoughLocation(coordItem.lat!, coordItem.long!)),
           position: LatLng(coordItem.lat!, coordItem.long!)));
     }
@@ -88,6 +88,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         ],
         color: Colors.blue,
         width: 5));
+
+    event.controller
+        .animateCamera(CameraUpdate.newLatLng(markers.first.position));
     emit(MapLoadedSuccessState(markers: markers, polylines: polylines));
   }
 }
@@ -128,6 +131,12 @@ Future<Position> determinePosition() async {
 }
 
 Future<String> getRoughLocation(double lat, double long) async {
+  List<Placemark> placemarks = await placemarkFromCoordinates(lat, long);
+  String location = "${placemarks[0].name}";
+  return location;
+}
+
+Future<String> getCityName(double lat, double long) async {
   List<Placemark> placemarks = await placemarkFromCoordinates(lat, long);
   String location = "${placemarks[0].locality}";
   return location;
