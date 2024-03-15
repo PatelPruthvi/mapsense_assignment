@@ -25,3 +25,9 @@ class MapShowLinesClickedEvent extends MapEvent {
 
   MapShowLinesClickedEvent({required this.controller});
 }
+
+class MapShowCoordsClickedEvent extends MapEvent {
+  final GoogleMapController controller;
+
+  MapShowCoordsClickedEvent({required this.controller});
+}

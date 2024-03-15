@@ -28,3 +28,15 @@ class MapLoadedSuccessState extends MapState {
 }
 
 class MapOpenBottomSheetActionState extends MapActionState {}
+
+class MapDisplayErrorFlushBarActionState extends MapActionState {
+  final String errorMsg;
+
+  MapDisplayErrorFlushBarActionState({required this.errorMsg});
+}
+
+class MapDisplayCoordsSaveSuccessActionState extends MapActionState {
+  final String successMsg;
+
+  MapDisplayCoordsSaveSuccessActionState({required this.successMsg});
+}

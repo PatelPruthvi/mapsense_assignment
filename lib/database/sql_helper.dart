@@ -1,3 +1,4 @@
+import 'package:assignment_mapsense/exceptions/app_exceptions.dart';
 import 'package:assignment_mapsense/models/coords_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart' as sql;
@@ -25,8 +26,12 @@ class TableHelper {
   static Future createItem(CoordsModel coords) async {
     final db = await SQLHelper.db();
     final jsonCoords = coords.toJson();
-    await db.insert(coordsTableName, jsonCoords,
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    await db
+        .insert(coordsTableName, jsonCoords,
+            conflictAlgorithm: ConflictAlgorithm.replace)
+        .onError((error, stackTrace) {
+      throw CreateItemException();
+    });
   }
 
   static Future<List<Map<String, dynamic>>> getAllCoords() async {

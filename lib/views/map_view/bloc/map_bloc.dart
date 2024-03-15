@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:assignment_mapsense/database/sql_helper.dart';
+import 'package:assignment_mapsense/exceptions/app_exceptions.dart';
 import 'package:assignment_mapsense/models/coords_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     on<MapHistoryCoordsBtnClickedEvent>(mapHistoryCoordsBtnClickedEvent);
     on<MapIthLocationPressedEvent>(mapIthLocationPressedEvent);
     on<MapShowLinesClickedEvent>(mapShowLinesClickedEvent);
+    on<MapShowCoordsClickedEvent>(mapShowCoordsClickedEvent);
   }
 
   FutureOr<void> mapInitialEvent(
@@ -32,14 +34,18 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       LatLng newLatLng = LatLng(value.latitude, value.longitude);
       event.controller.animateCamera(CameraUpdate.newLatLng(newLatLng));
       markers.clear();
+      String city = await getCityName(value.latitude, value.longitude);
+      String location = await getRoughLocation(value.latitude, value.longitude);
+
       markers.add(Marker(
           markerId: const MarkerId('currentLocation'),
+          infoWindow: InfoWindow(snippet: city, title: location),
           position: LatLng(value.latitude, value.longitude)));
       final coords = CoordsModel(lat: value.latitude, long: value.longitude);
       await TableHelper.createItem(coords);
       emit(MapLoadedSuccessState(markers: markers, polylines: polylines));
     }).onError((error, stackTrace) {
-      print(error);
+      emit(MapDisplayErrorFlushBarActionState(errorMsg: error.toString()));
     });
   }
 
@@ -49,14 +55,20 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   }
 
   FutureOr<void> mapIthLocationPressedEvent(
-      MapIthLocationPressedEvent event, Emitter<MapState> emit) {
+      MapIthLocationPressedEvent event, Emitter<MapState> emit) async {
     Set<Marker> markers = {};
     LatLng newLatLng = LatLng(event.coordsModel.lat!, event.coordsModel.long!);
-    event.controller.animateCamera(CameraUpdate.newLatLng(newLatLng));
+    event.controller.animateCamera(CameraUpdate.newLatLngZoom(newLatLng, 12.5));
     markers.clear();
+    String city =
+        await getCityName(event.coordsModel.lat!, event.coordsModel.long!);
+    String location =
+        await getRoughLocation(event.coordsModel.lat!, event.coordsModel.long!);
     markers.add(Marker(
         markerId: const MarkerId('currentLocation'),
-        position: LatLng(event.coordsModel.lat!, event.coordsModel.long!)));
+        position: LatLng(event.coordsModel.lat!, event.coordsModel.long!),
+        infoWindow: InfoWindow(title: location, snippet: city)));
+
     emit(MapLoadedSuccessState(markers: markers, polylines: {}));
   }
 
@@ -71,12 +83,11 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     }
     for (int i = 0; i < coordsList.length; i++) {
       final coordItem = coordsList[i];
+      String city = await getCityName(coordItem.lat!, coordItem.long!);
+      String location = await getRoughLocation(coordItem.lat!, coordItem.long!);
       markers.add(Marker(
           markerId: MarkerId('$i'),
-          infoWindow: InfoWindow(
-              snippet:
-                  '${await getCityName(coordItem.lat!, coordItem.long!)} \n $i',
-              title: await getRoughLocation(coordItem.lat!, coordItem.long!)),
+          infoWindow: InfoWindow(snippet: '$city \n $i', title: location),
           position: LatLng(coordItem.lat!, coordItem.long!)));
     }
     polylines.add(Polyline(
@@ -89,9 +100,35 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         color: Colors.blue,
         width: 5));
 
-    event.controller
-        .animateCamera(CameraUpdate.newLatLng(markers.first.position));
+    event.controller.animateCamera(
+        CameraUpdate.newLatLngZoom(markers.first.position, 10.2));
     emit(MapLoadedSuccessState(markers: markers, polylines: polylines));
+  }
+
+  FutureOr<void> mapShowCoordsClickedEvent(
+      MapShowCoordsClickedEvent event, Emitter<MapState> emit) async {
+    Set<Marker> markers = {};
+
+    List<CoordsModel> coordsList = [];
+    emit(MapLoadedSuccessState(markers: {}, polylines: {}));
+    await TableHelper.getAllCoords().then((value) {
+      for (var element in value) {
+        coordsList.add(CoordsModel.fromJson(element));
+      }
+    });
+
+    for (int i = 0; i < coordsList.length; i++) {
+      final coordItem = coordsList[i];
+      String city = await getCityName(coordItem.lat!, coordItem.long!);
+      String location = await getRoughLocation(coordItem.lat!, coordItem.long!);
+      markers.add(Marker(
+          markerId: MarkerId('$i'),
+          infoWindow: InfoWindow(snippet: '$city \n $i', title: location),
+          position: LatLng(coordItem.lat!, coordItem.long!)));
+    }
+    event.controller.animateCamera(
+        CameraUpdate.newLatLngZoom(markers.first.position, 9.75));
+    emit(MapLoadedSuccessState(markers: markers, polylines: {}));
   }
 }
 
@@ -117,12 +154,14 @@ Future<Position> determinePosition() async {
       // Android's shouldShowRequestPermissionRationale
       // returned true. According to Android guidelines
       // your App should show an explanatory UI now.
-      return Future.error('Location permissions are denied');
+      throw LocationPermissionDeniedException();
+      // return Future.error('Location permissions are denied');
     }
   } else if (permission == LocationPermission.deniedForever) {
     // Permissions are denied forever, handle appropriately.
-    return Future.error(
-        'Location permissions are permanently denied, we cannot request permissions.');
+    throw LocationPermissionDeniedException();
+    // return Future.error(
+    //     'Location permissions are permanently denied, we cannot request permissions.');
   }
 
   // When we reach here, permissions are granted and we can
@@ -131,13 +170,23 @@ Future<Position> determinePosition() async {
 }
 
 Future<String> getRoughLocation(double lat, double long) async {
-  List<Placemark> placemarks = await placemarkFromCoordinates(lat, long);
-  String location = "${placemarks[0].name}";
+  String location = 'null';
+  await placemarkFromCoordinates(lat, long).then((value) {
+    location = "${value[0].name}";
+    return location;
+  }).onError((error, stackTrace) {
+    return "null";
+  });
   return location;
 }
 
 Future<String> getCityName(double lat, double long) async {
-  List<Placemark> placemarks = await placemarkFromCoordinates(lat, long);
-  String location = "${placemarks[0].locality}";
+  String location = 'null';
+  await placemarkFromCoordinates(lat, long).then((value) {
+    location = "${value[0].locality}";
+    return location;
+  }).onError((error, stackTrace) {
+    return error.toString();
+  });
   return location;
 }

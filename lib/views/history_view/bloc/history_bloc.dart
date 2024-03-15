@@ -68,7 +68,11 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
 }
 
 Future<String> getLocation(double lat, double long) async {
-  List<Placemark> placemarks = await placemarkFromCoordinates(lat, long);
-  String location = "${placemarks[0].subLocality}, ${placemarks[0].locality}";
+  String location = "";
+  await placemarkFromCoordinates(lat, long).then((value) {
+    location = "${value[0].subLocality}, ${value[0].locality}";
+    return location;
+  }).onError((error, stackTrace) => "error");
+
   return location;
 }
