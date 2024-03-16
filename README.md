@@ -59,4 +59,3 @@ Follow these steps to install and run the Cricbuzz Clone:
 <img height="400" alt="image" src="https://github.com/PatelPruthvi/mapsense_assignment/assets/71627511/17b6b372-1bbf-4884-9126-e0ffe68005ac">
 
 - [Video Demo & Download APK](#) [Click Here](https://drive.google.com/drive/folders/18-kUBZ4hsa9_E0KBZHio35NN6AGfsDSV?usp=share_link)
-
