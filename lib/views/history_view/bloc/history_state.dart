@@ -33,3 +33,9 @@ class HistoryUnableToDeleteActionState extends HistoryActionState {
 
   HistoryUnableToDeleteActionState({required this.errorMsg});
 }
+
+class HistoryDisplaySnackBarActionState extends HistoryActionState {
+  final String msg;
+
+  HistoryDisplaySnackBarActionState({required this.msg});
+}

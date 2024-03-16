@@ -46,6 +46,8 @@ dependencies:
   another_flushbar: ^1.12.30
   fluttertoast: ^8.2.4
   connectivity: ^3.0.6
+  path_provider: ^2.1.2
+  csv: ^6.0.0
 
 dev_dependencies:
   flutter_test:

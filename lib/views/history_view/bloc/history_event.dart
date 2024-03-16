@@ -22,3 +22,5 @@ class HistoryIthCoordPinPressedEvent extends HistoryEvent {
     required this.coords,
   });
 }
+
+class HistoryGenerateCsvBtnClickedEvent extends HistoryEvent {}

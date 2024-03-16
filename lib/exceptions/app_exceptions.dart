@@ -43,3 +43,9 @@ class LocationNameLoadException extends AppException {
       : super(
             'Unable to retrieve address from coordinates. This could be due to low internet connection.');
 }
+
+class CsvGenerationException extends AppException {
+  CsvGenerationException()
+      : super(
+            'Failed to generate CSV file. Check file permissions and try again.');
+}

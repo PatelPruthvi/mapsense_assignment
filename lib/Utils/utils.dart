@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class Utils {
+  static snackBar(String msg, BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg), duration: const Duration(seconds: 10)));
+  }
+
   static toastMessage(String msg) {
     Fluttertoast.showToast(
         msg: msg, toastLength: Toast.LENGTH_LONG, timeInSecForIosWeb: 5);

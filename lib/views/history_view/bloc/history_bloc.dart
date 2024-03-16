@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:assignment_mapsense/database/sql_helper.dart';
+import 'package:assignment_mapsense/exports/export_csv.dart';
 import 'package:assignment_mapsense/models/coords_model.dart';
 import 'package:assignment_mapsense/views/map_view/bloc/map_bloc.dart';
 import 'package:bloc/bloc.dart';
@@ -14,6 +15,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     on<HistoryInitialEvent>(historyInitialEvent);
     on<HistoryIthItemDeletedPressedEvent>(historyIthItemDeletedPressedEvent);
     on<HistoryIthCoordPinPressedEvent>(historyIthCoordPinPressedEvent);
+    on<HistoryGenerateCsvBtnClickedEvent>(historyGenerateCsvBtnClickedEvent);
   }
 
   FutureOr<void> historyInitialEvent(
@@ -60,5 +62,15 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       HistoryIthCoordPinPressedEvent event, Emitter<HistoryState> emit) {
     emit(HistoryNavigateToPinActionState(
         coords: event.coords, controller: event.controller));
+  }
+
+  FutureOr<void> historyGenerateCsvBtnClickedEvent(
+      HistoryGenerateCsvBtnClickedEvent event,
+      Emitter<HistoryState> emit) async {
+    await ExportCsv().exportDataToCsv().then((value) {
+      emit(HistoryDisplaySnackBarActionState(msg: value));
+    }).onError((error, stackTrace) {
+      emit(HistoryUnableToDeleteActionState(errorMsg: error.toString()));
+    });
   }
 }

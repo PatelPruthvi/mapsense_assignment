@@ -90,6 +90,9 @@ class _HistoryViewState extends State<HistoryView> {
                               controller: state.controller));
                         } else if (state is HistoryUnableToDeleteActionState) {
                           Utils.flushBarErrorMsg(state.errorMsg, context);
+                        } else if (state is HistoryDisplaySnackBarActionState) {
+                          Navigator.pop(context);
+                          Utils.snackBar(state.msg, context);
                         }
                       },
                       buildWhen: (previous, current) =>
@@ -212,6 +215,18 @@ class _HistoryViewState extends State<HistoryView> {
                         }
                       },
                     ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: FloatingActionButton.extended(
+                            onPressed: () {
+                              historyBloc
+                                  .add(HistoryGenerateCsvBtnClickedEvent());
+                            },
+                            label: const Text('Export .csv')),
+                      ),
+                    )
                   ],
                 ),
               ),
