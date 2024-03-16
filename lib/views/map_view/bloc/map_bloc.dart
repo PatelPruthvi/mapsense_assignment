@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:assignment_mapsense/database/sql_helper.dart';
 import 'package:assignment_mapsense/exceptions/app_exceptions.dart';
+import 'package:assignment_mapsense/location/location_service.dart';
 import 'package:assignment_mapsense/models/coords_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       MapCurrLocationBtnClickedEvent event, Emitter<MapState> emit) async {
     Set<Marker> markers = {};
     Set<Polyline> polylines = {};
-    await determinePosition().then((value) async {
+    GeolocatorService locationService = GeolocatorService();
+    await determinePosition(locationService).then((value) async {
       final coords = CoordsModel(lat: value.latitude, long: value.longitude);
       LatLng newLatLng = LatLng(value.latitude, value.longitude);
       markers.clear();
@@ -146,7 +148,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   }
 }
 
-Future<Position> determinePosition() async {
+Future<Position> determinePosition(GeolocatorService locationService) async {
   bool serviceEnabled;
   LocationPermission permission;
 
