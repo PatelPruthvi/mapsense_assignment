@@ -50,11 +50,13 @@ Follow these steps to install and run the Cricbuzz Clone:
 - **Challenges Faced:** Overcame challenges in error handling and optimizing database operations.
 - **Version Control:** Managed the project using Git and hosted the repository on GitHub.
 
-## Screenshots
+## Screenshots and Demo
 
 <img height="400" alt="image" src="https://github.com/PatelPruthvi/mapsense_assignment/assets/71627511/cf033e80-b250-4988-bcfa-b0cb1ffe77a2">
 <img height="400" alt="image" src="https://github.com/PatelPruthvi/mapsense_assignment/assets/71627511/f71713ca-cb86-4457-be2c-127ec1972fc0">
 <img height="400" alt="image" src="https://github.com/PatelPruthvi/mapsense_assignment/assets/71627511/a5ed5a3b-68cd-4014-afb6-731e4bea24df">
 <img height="400" alt="image" src="https://github.com/PatelPruthvi/mapsense_assignment/assets/71627511/556e9f53-4423-4b07-ab98-1b42729b76b5">
 <img height="400" alt="image" src="https://github.com/PatelPruthvi/mapsense_assignment/assets/71627511/17b6b372-1bbf-4884-9126-e0ffe68005ac">
+
+- [Video Demo & Download APK](#) [Click Here](https://drive.google.com/drive/folders/18-kUBZ4hsa9_E0KBZHio35NN6AGfsDSV?usp=share_link)
 
