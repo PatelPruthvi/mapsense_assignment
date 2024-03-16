@@ -70,7 +70,7 @@ class _MapViewState extends State<MapView> {
                       controller: googleMapController, mapBloc: mapBloc));
             } else if (state is MapDisplayErrorFlushBarActionState) {
               Utils.flushBarErrorMsg(state.errorMsg, context);
-            } else if (state is MapDisplayCoordsSaveSuccessActionState) {
+            } else if (state is MapShowToastActionState) {
               Utils.toastMessage(state.successMsg);
             }
           },

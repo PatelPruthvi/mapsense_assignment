@@ -35,8 +35,8 @@ class MapDisplayErrorFlushBarActionState extends MapActionState {
   MapDisplayErrorFlushBarActionState({required this.errorMsg});
 }
 
-class MapDisplayCoordsSaveSuccessActionState extends MapActionState {
+class MapShowToastActionState extends MapActionState {
   final String successMsg;
 
-  MapDisplayCoordsSaveSuccessActionState({required this.successMsg});
+  MapShowToastActionState({required this.successMsg});
 }

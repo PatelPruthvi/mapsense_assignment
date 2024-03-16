@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:assignment_mapsense/Utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -87,6 +88,8 @@ class _HistoryViewState extends State<HistoryView> {
                           widget.mapBloc.add(MapIthLocationPressedEvent(
                               coordsModel: state.coords,
                               controller: state.controller));
+                        } else if (state is HistoryUnableToDeleteActionState) {
+                          Utils.flushBarErrorMsg(state.errorMsg, context);
                         }
                       },
                       buildWhen: (previous, current) =>
@@ -99,6 +102,12 @@ class _HistoryViewState extends State<HistoryView> {
                                   child: Text(
                                       "No Co-ordinates Stored Previously...")),
                             );
+                          case HistoryLoadingFailedState:
+                            final successState =
+                                state as HistoryLoadingFailedState;
+                            return Expanded(
+                                child:
+                                    Center(child: Text(successState.errorMsg)));
                           case HistoryListLoadedSuccessState:
                             final successState =
                                 state as HistoryListLoadedSuccessState;
@@ -159,7 +168,8 @@ class _HistoryViewState extends State<HistoryView> {
                                                 children: [
                                                   Text(
                                                       successState
-                                                          .locations[index],
+                                                          .coordsList[index]
+                                                          .address!,
                                                       maxLines: 2,
                                                       overflow:
                                                           TextOverflow.ellipsis,

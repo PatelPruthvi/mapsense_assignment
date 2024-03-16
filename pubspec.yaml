@@ -45,10 +45,13 @@ dependencies:
   geocoding: ^3.0.0
   another_flushbar: ^1.12.30
   fluttertoast: ^8.2.4
+  connectivity: ^3.0.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  sqflite_common_ffi: ^2.3.2+1
+  mockito:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

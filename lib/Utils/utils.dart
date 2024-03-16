@@ -5,7 +5,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class Utils {
   static toastMessage(String msg) {
-    Fluttertoast.showToast(msg: msg);
+    Fluttertoast.showToast(
+        msg: msg, toastLength: Toast.LENGTH_LONG, timeInSecForIosWeb: 5);
   }
 
   static flushBarErrorMsg(
@@ -29,7 +30,7 @@ class Utils {
           title: "Error",
           message: msg,
           backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
+          duration: const Duration(seconds: 5),
         )..show(context));
   }
 }
