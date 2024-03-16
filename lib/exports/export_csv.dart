@@ -31,8 +31,8 @@ class ExportCsv {
         'lat',
         'long',
         'address',
-        'MarkerTitle',
-        'MarkerSubTitle'
+        'markerTitle',
+        'markerSubTitle'
       ], // Adjust these headers based on your database schema
 
       // Add rows
@@ -41,8 +41,8 @@ class ExportCsv {
             row['lat'],
             row['long'],
             row['address'],
-            row['MarkerTitle'],
-            row['MarkerSubTitle']
+            row['markerTitle'],
+            row['markerSubTitle']
           ]), // Adjust column names accordingly
     ];
 
