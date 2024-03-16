@@ -36,7 +36,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       LatLng newLatLng = LatLng(value.latitude, value.longitude);
       markers.clear();
       markers.add(Marker(
-          markerId: const MarkerId('currentLocation'),
+          markerId: MarkerId(UniqueKey().toString()),
           infoWindow: InfoWindow(
             title: 'Co-ords',
             snippet: 'lat: ${value.latitude} \nlong: ${value.longitude}',
@@ -64,11 +64,11 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     markers.clear();
 
     markers.add(Marker(
-      markerId: const MarkerId('currentLocation'),
+      markerId: MarkerId(UniqueKey().toString()),
       position: LatLng(event.coordsModel.lat!, event.coordsModel.long!),
       infoWindow: InfoWindow(
-          snippet: event.coordsModel.markerSubTitle,
-          title: event.coordsModel.markerTitle),
+          title: event.coordsModel.markerTitle,
+          snippet: event.coordsModel.markerSubTitle),
     ));
 
     emit(MapLoadedSuccessState(markers: markers, polylines: {}));
@@ -86,10 +86,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       for (int i = 0; i < coordsList.length; i++) {
         final coordItem = coordsList[i];
         markers.add(Marker(
-            markerId: MarkerId('$i'),
+            markerId: MarkerId(UniqueKey().toString()),
             infoWindow: InfoWindow(
-                snippet: '${coordItem.markerSubTitle} \n $i',
-                title: coordItem.markerTitle),
+                title: coordItem.markerTitle,
+                snippet: '${coordItem.markerSubTitle} \n $i'),
             position: LatLng(coordItem.lat!, coordItem.long!)));
       }
       polylines.add(Polyline(
@@ -125,12 +125,12 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         coordsList.add(CoordsModel.fromJson(element));
         for (int i = 0; i < coordsList.length; i++) {
           final coordItem = coordsList[i];
-
           markers.add(Marker(
-              markerId: MarkerId('$i'),
+              markerId: MarkerId(UniqueKey().toString()),
               infoWindow: InfoWindow(
-                  snippet: '${coordItem.markerSubTitle} \n $i',
-                  title: coordItem.markerTitle),
+                title: coordItem.markerTitle.toString(),
+                snippet: '${coordItem.markerSubTitle}\n$i',
+              ),
               position: LatLng(coordItem.lat!, coordItem.long!)));
         }
         if (coordsList.isEmpty) {
