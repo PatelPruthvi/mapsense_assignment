@@ -11,8 +11,8 @@ class SQLHelper {
         onCreate: (db, version) async {
       if (kDebugMode) {
         print('Creating a table...');
-        await TableHelper.createTable(db);
       }
+      await TableHelper.createTable(db);
     });
   }
 }
