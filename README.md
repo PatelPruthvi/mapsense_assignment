@@ -23,7 +23,7 @@ This Flutter application demonstrates location-based services, allowing users to
 
 ### Installation
 
-Follow these steps to install and run the Cricbuzz Clone:
+Follow these steps to install and run the Assignment
 
 1. **Clone the repository:**
 
@@ -38,7 +38,10 @@ Follow these steps to install and run the Cricbuzz Clone:
    
    ```bash
    $ flutter pub get
-4. **Run application**
+   
+4. **Replace API Key in AndroidManifest.xml and AppDelegate.swift**
+Replace 'YOUR_API_KEY' in the AndroidManifest.xml file located in the android/app/src/main directory with your Google Maps API key. Similarly, replace 'YOUR_API_KEY' with your Google Maps API key in the AppDelegate.swift file in the ios/Runner directory using the GMSServices.provideApiKey('YOUR_API_KEY') method.
+5. **Run application**
 
    ```bash
    $ flutter run
